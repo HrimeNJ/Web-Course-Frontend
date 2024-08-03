@@ -1,0 +1,95 @@
+/* Login styles */
+.loginContainer {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: #fff;
+    text-align: center;
+}
+
+/* Header styles */
+.loginContainer h1 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #333;
+}
+
+/* Form group styles */
+.formGroup {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #555;
+}
+
+.formGroup input {
+    width: 90%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: white;
+}
+
+.formGroup input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Button styles */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Link styles */
+p {
+    margin-top: 20px;
+}
+
+p button {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 1rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+p button:hover {
+    text-decoration: none;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .loginContainer {
+        padding: 15px;
+    }
+
+    .formGroup input {
+        font-size: 0.9rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+    }
+}
