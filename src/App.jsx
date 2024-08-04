@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
+import Kanban from './img/Kanban.jpg'
 
 const App = () => {
   const [title, setTitle] = useState("");
@@ -46,20 +47,42 @@ const App = () => {
 
   return (
     <>
+    <header>
       <h1 className={styles.title}><strong>{title || "My First Web Program"}</strong></h1>
-      <div className={styles.card}>
-        <p>
-          You can <button id='LoginButton' className={styles.button} onClick={handleLogIn}>Log In</button> Here.
-        </p>
-        <p>
-          Exit My Web from <button id='LeaveButton' className={styles.button} onClick={handleExit}>here</button>.
-        </p>
-        <button className={styles.button} onClick={handleLogIn}>Let's begin!</button>
-        <p>{wsMessage}</p>
-      </div>
-      <p className={styles.readTheDocs}>
-        Click on the Details to learn more
-      </p>
+      <ul>
+        <li><a href='#'>Research</a></li>
+        <li><a href='#'>Products</a></li>
+        <li><a href='#'>Safety</a></li>
+        <li><a href='#'>Company</a></li>
+      </ul>
+    </header>
+    <nav></nav>
+
+    <main>
+      <section className={styles.news}>
+        <h2>高效看板，敏捷使用！</h2>
+        <p>在看板上可视化任务、限制进行中的工作、识别瓶颈
+          <br/> 来改进工作流程，帮您和团队顺利交付！</p>
+        <a href='http://localhost:5173/Login'>Get Started</a>
+      </section>
+
+      <section className={styles.slogan}>
+      <blockquote>“如果你以为用户是白痴，<br/>那就只有白痴才用它。”</blockquote>
+      </section>
+
+      <section className={styles.Intruduction}>
+        <img src={Kanban} alt='敏捷看板'></img>
+        <div className={styles.Info}>
+          <h2>Let's start with Kanban Board!</h2>
+          <p>享受敏捷看板带来的便捷与高效，<br/>让你的团队更高！更快！更强！</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Copyright @ 13934469170 All rights reserved<br/>
+      Contact with us by email 1970902125@qq.com
+    </footer>
     </>
   );
 };

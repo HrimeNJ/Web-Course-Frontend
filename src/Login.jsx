@@ -15,7 +15,7 @@ const Login = () => {
                 password
             });
             console.log("Logging in with", { email, password });
-            navigate('/');
+            navigate('/taskboard');
         } catch (error) {
             console.log('Login Failed', error.response ? error.response.data : error.message);
             navigate('/');
@@ -23,33 +23,42 @@ const Login = () => {
     };
 
     const handleSignUp = () => {
-        navigate('/signup');
+        // navigate('/signup');
+        handleLogin()
     };
 
     return (
-        <div className={styles.loginContainer}>
-            <h1>Login Page</h1>
-            <div className={styles.formGroup}>
-                <label>Email:</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </div>
-            <div className={styles.formGroup}>
-                <label>Password:</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
-            <button onClick={handleLogin}>Log In</button>
-            <p>
-                Don't have an account? <button onClick={handleSignUp}>Sign Up</button>
-            </p>
-        </div>
+        <>
+        <main className={styles.login}>
+            <section>
+                <h1 className={styles.logintitle}>Login Page</h1>
+            </section>
+
+            <section className={styles.loginContainer}>
+                <div className={styles.formGroup}>
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <div className={styles.formGroup}>
+                    <label>Password:</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+            </section>
+
+            <section className={styles.loginbutton}>
+                <button onClick={handleLogin}>Log In</button>
+                <button onClick={handleSignUp}>Sign Up</button>
+            </section>
+        </main>
+        </>
     );
 };
 

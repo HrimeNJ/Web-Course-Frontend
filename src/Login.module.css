@@ -1,22 +1,40 @@
 /* Login styles */
+*{
+    margin: 0;
+    padding: 0;
+}
+
+section{
+    background-color: antiquewhite;
+}
+
+.login{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logintitle{
+    font-size: 40px;
+    background-color: white;
+}
+
 .loginContainer {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
+    width: 280px;
+    height: 280px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background: #fff;
+    background: lightgrey;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Header styles */
-.loginContainer h1 {
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: #333;
-}
-
-/* Form group styles */
 .formGroup {
     margin-bottom: 20px;
     text-align: left;
@@ -44,9 +62,15 @@
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
-/* Button styles */
-button {
-    width: 100%;
+.loginbutton{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginbutton button {
+    width: 280px;
     padding: 12px;
     border: none;
     border-radius: 5px;
@@ -55,9 +79,10 @@ button {
     background-color: #007bff;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-bottom: 10px;
 }
 
-button:hover {
+.loginbutton button:hover {
     background-color: #0056b3;
 }
 
