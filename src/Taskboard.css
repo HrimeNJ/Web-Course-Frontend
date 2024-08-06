@@ -1,0 +1,90 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+main.Taskboard{
+    background-color: white !important;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    text-align: center;
+}
+
+section.taskboard{
+    background-color: #e7f9ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 120px;
+    width: 100%;
+    margin-left: 160px;
+}
+
+section.taskboard h1 {
+    font-size: 48px;
+    text-align: center;
+}
+
+section.taskboard ul{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+section.taskboard li{
+    list-style: none;
+    margin-right: 20px;
+}
+
+section.taskboard a{
+    text-decoration: none;
+    color: #44546f;
+    border: #646cff 1px solid;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+section.taskboard button {
+    background-color: lightblue;
+    color: black;
+    border-radius: 5%;
+    border: solid 1px #000000;
+    margin-right: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    margin-top: 15px;
+}
+
+section.taskboard button:hover{
+    background-color: #646cff;
+}
+
+section.taskboard button:active{
+    background-color: #44546f;
+    color: white;
+}
+
+section.ProjectsColumn{
+    background-color: antiquewhite;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 160px;
+    height: 100%;
+    
+}
+
+section.ProjectsColumn h1{
+    font-size: 36px;
+    position: absolute;
+    left: 2vw;
+    top: 2vw;
+}
+
+section.ProjectsColumn footer{
+    position: absolute;
+    bottom: 0;
+    width: 160px;
+}

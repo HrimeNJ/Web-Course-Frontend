@@ -16,6 +16,8 @@ const Login = () => {
             });
             console.log("Logging in with", { email, password });
             navigate('/taskboard');
+            setEmail("")
+            setPassword("")
         } catch (error) {
             console.log('Login Failed', error.response ? error.response.data : error.message);
             navigate('/');
