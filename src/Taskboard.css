@@ -14,31 +14,45 @@ main.Taskboard{
 section.taskboard{
     background-color: #e7f9ff;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     text-align: center;
-    height: 120px;
+    height: 100%;
     width: 100%;
     margin-left: 160px;
 }
 
-section.taskboard h1 {
+div.topSection{
+    width: 100%;
+    border-bottom: 2px solid #c7dae4;
+    border-top: 2px solid #c7dae4;
+    position: relative;
+    display: flex;
+    margin-top: 30px;
+}
+
+div.board{
+    margin-top: 30px;
+    display: flex;
+}
+
+div.topSection h1 {
     font-size: 48px;
     text-align: center;
 }
 
-section.taskboard ul{
+div.topSection ul{
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-section.taskboard li{
+div.topSection li{
     list-style: none;
     margin-right: 20px;
 }
 
-section.taskboard a{
+div.topSection a{
     text-decoration: none;
     color: #44546f;
     border: #646cff 1px solid;
@@ -46,7 +60,7 @@ section.taskboard a{
     margin-bottom: 15px;
 }
 
-section.taskboard button {
+div.topSection button {
     background-color: lightblue;
     color: black;
     border-radius: 5%;
@@ -57,15 +71,143 @@ section.taskboard button {
     margin-top: 15px;
 }
 
-section.taskboard button:hover{
+div.topSection button:hover{
     background-color: #646cff;
 }
 
-section.taskboard button:active{
+div.topSection button:active{
     background-color: #44546f;
     color: white;
 }
 
+ul.tasklist{
+    background-color: antiquewhite;
+    text-align: center;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+li.task{
+    list-style: none;
+    
+}
+
+/* Taskboard.css */
+
+.board {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.columns {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.column-to-column {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 30%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 30px;
+}
+
+.column-header-to-do{
+    background-color: #ff872f;
+    padding: 10px;
+    color: white;
+    border-radius: 8px 8px 0 0;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.column-header-doing{
+    background-color: #13a4d9;
+    padding: 10px;
+    color: white;
+    border-radius: 8px 8px 0 0;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.column-header-done{
+    background-color: #4caf50;
+    padding: 10px;
+    color: white;
+    border-radius: 8px 8px 0 0;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.tasklist {
+    padding: 10px;
+    margin: 0;
+    list-style-type: none;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.task {
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.task p {
+    margin: 0;
+}
+
+.task:hover {
+    background-color: #bbdefb;
+}
+
+/* 按钮样式 */
+.column-button {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.delete-button {
+    background-color: #f44336;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1em;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+}
+
+.submit{
+    background-color: #e3f2fd;
+}
+
+/* 左边栏 */
 section.ProjectsColumn{
     background-color: antiquewhite;
     position: absolute;
@@ -73,14 +215,54 @@ section.ProjectsColumn{
     top: 0;
     width: 160px;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     
 }
 
-section.ProjectsColumn h1{
-    font-size: 36px;
+section.ProjectsColumn div{
+    width: 100%;
+}
+
+section.ProjectsColumn div.h{
+    background-color: rgb(241, 179, 108);
+    font-size: 48px;
     position: absolute;
-    left: 2vw;
-    top: 2vw;
+    top: 0vw;
+    height: 120px;
+    text-align: center;
+    line-height: 120px;
+    border:  1px;
+}
+
+section.ProjectsColumn ul{
+    list-style-type: none;
+    margin-left: 0px;
+    padding-left: 10px;
+    position: relative;
+    top: -160px
+}
+
+section.ProjectsColumn ul li a {
+    text-decoration: none;
+    color: #24abab;
+    font-size: 16px;
+    font-weight: 800;
+    display: inline-block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100%;
+    margin-left: -5px;
+    padding-left: 10px;
+}
+
+section.ProjectsColumn ul li a:hover {
+    background: #eddd82;
+    border-left: solid 8px #6a75eb;
+    margin-left: -10px;
+    width: 96%;
 }
 
 section.ProjectsColumn footer{
