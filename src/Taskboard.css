@@ -126,7 +126,7 @@ li.task{
     margin-right: 30px;
 }
 
-.column-header-to-do{
+.column-header-todo{
     background-color: #ff872f;
     padding: 10px;
     color: white;
@@ -205,6 +205,14 @@ li.task{
 
 .submit{
     background-color: #e3f2fd;
+}
+
+#Notask{
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fe7c1f;
+    margin-top: 20px;
+    background-color: #d7dfe3;
 }
 
 /* 左边栏 */

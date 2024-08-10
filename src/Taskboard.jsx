@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom";
 import React, {useState} from "react";
 import axios from "axios";
 import "./Taskboard.css";
+import { useEffect } from "react";
+import TaskList from "./Tasklist";
+import EditTask from "./EditTask"; 
 
 const Taskboard = () => {
     const navigate = useNavigate();
@@ -25,6 +28,8 @@ const Taskboard = () => {
     });
 
     const [newTaskContent, setNewTaskContent] = useState("");
+    const [editTaskId, setEditTaskId] = useState(null);
+    const [editTaskColumn, setEditTaskColumn] = useState(null);
 
     // 拖拽开始处理函数
     const handleDragStart = (event, taskId, fromColumn) => {
@@ -55,10 +60,16 @@ const Taskboard = () => {
             const taskItems = document.querySelectorAll(`#${targetColumn} .task`);
             let insertAtIndex = taskItems.length;
 
+            console.log("Length: ", insertAtIndex);
+
             // 计算插入的位置
             for (let i = 0; i < taskItems.length; i++) {
                 const taskItem = taskItems[i];
                 const taskItemRect = taskItem.getBoundingClientRect();
+
+                // 调试输出位置和尺寸信息
+                console.log("Task Item Rect:", taskItemRect);
+                console.log("Client Y:", event.clientY);
 
                 if (event.clientY < taskItemRect.top + taskItemRect.height / 2) {
                     insertAtIndex = i;
@@ -68,7 +79,11 @@ const Taskboard = () => {
 
             // 在目标列的指定位置插入任务
             updatedTasks[targetColumn].splice(insertAtIndex, 0, taskToMove);
+            // console.log("update tasks", updatedTasks)
+
             setTasks(updatedTasks);
+            // console.log("tasks", tasks);
+            // console.log(updatedTasks==tasks);
         }
     };
 
@@ -99,7 +114,7 @@ const Taskboard = () => {
         setNewTaskContent("");
     };
 
-    const handlieSaveTask = (event) => {
+    const handleSaveTask = (event) => {
         event.preventDefault();
         // 保存任务列表
         // TODO: 实现任务列表的持久化
@@ -107,6 +122,18 @@ const Taskboard = () => {
        .then(response => console.log(response))
 
     };
+
+    //编辑面板数据
+    const updateTask = (columnId, taskId, updatedContent) => {
+        const updatedTasks = { ...tasks };
+        const taskIndex = updatedTasks[columnId].findIndex(task => task.id === taskId);
+    
+        if (taskIndex !== -1) {
+            updatedTasks[columnId][taskIndex].content = updatedContent;
+            setTasks(updatedTasks);
+        }
+    };
+
 
     return (
         <>
@@ -154,80 +181,72 @@ const Taskboard = () => {
                         <button onClick={()=>navigate('/taskhistory')}>Task History</button>
                         {/* Add task form here */}
                         <button onClick={()=>navigate('/taskgrouping')}>Task Grouping</button>
-                        <button onClick={(event) => handlieSaveTask(event)}>Save</button>
+                        <button onClick={(event) => handleSaveTask(event)}>Save</button>
 
                     </div>
                 </div>
 
                 {/* board */}
                 <div className="board">
-            <ul className="columns">
-                {/* ToDo 栏 */}
-                <li className="column-to-column">
-                    <div className="column-header-to-do">
-                        <h2>To Do</h2>
-                    </div>
-                    <ul className="tasklist" id="to-do"
-                        onDragOver={(event) => handleDragOver(event)}
-                        onDrop={(event) => handleDrop(event, 'todo')}>
-                        {tasks.todo.map((task) => (
-                            <li key={task.id} className="task"
-                                draggable
-                                onDragStart={(event) => handleDragStart(event, task.id, 'todo')}>
-                                <p>{task.content}</p>
-                            </li>
-                        ))}
-                    </ul>
-                    {/* 新增任务表单 */}
-                    <form onSubmit={handleNewTaskSubmit}>
-                        <input
-                            type="text"
-                            placeholder="Add new task"
-                            value={newTaskContent}
-                            onChange={handleNewTaskChange}
+                <ul className="columns">
+                    {/* ToDo 栏 */}
+                    <li className="column-to-column">
+                        <div className="column-header-todo">
+                            <h2>To Do</h2>
+                        </div>
+                        <TaskList
+                            tasks={tasks.todo}
+                            columnId="todo"
+                            onDragStart={handleDragStart}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            updateTask={updateTask}
                         />
-                        <button type="submit" className="submit">Add</button>
-                    </form>
-                </li>
+                        {/* 新增任务表单 */}
+                        <form onSubmit={handleNewTaskSubmit}>
+                            <input
+                                type="text"
+                                placeholder="Add new task"
+                                value={newTaskContent}
+                                onChange={handleNewTaskChange}
+                            />
+                            <button type="submit" className="submit">Add</button>
+                        </form>
+                    </li>
 
-                {/* Doing 栏 */}
-                <li className="column-to-column">
-                    <div className="column-header-doing">
-                        <h2>Processing</h2>
-                    </div>
-                    <ul className="tasklist" id="doing"
-                        onDragOver={(event) => handleDragOver(event)}
-                        onDrop={(event) => handleDrop(event, 'doing')}>
-                        {tasks.doing.map((task) => (
-                            <li key={task.id} className="task"
-                                draggable
-                                onDragStart={(event) => handleDragStart(event, task.id, 'doing')}>
-                                <p>{task.content}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </li>
+                    {/* Doing 栏 */}
+                    <li className="column-to-column">
+                        <div className="column-header-doing">
+                            <h2>Processing</h2>
+                        </div>
+                        <TaskList
+                            tasks={tasks.doing}
+                            columnId="doing"
+                            onDragStart={handleDragStart}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            updateTask={updateTask}
+                        />
+                    </li>
 
-                {/* Done 栏 */}
-                <li className="column-to-column">
-                    <div className="column-header-done">
-                        <h2>Done</h2>
-                    </div>
-                    <ul className="tasklist" id="done"
-                        onDragOver={(event) => handleDragOver(event)}
-                        onDrop={(event) => handleDrop(event, 'done')}>
-                        {tasks.done.map((task) => (
-                            <li key={task.id} className="task"
-                                draggable
-                                onDragStart={(event) => handleDragStart(event, task.id, 'done')}>
-                                <p>{task.content}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </li>
-            </ul>
+                    {/* Done 栏 */}
+                    <li className="column-to-column">
+                        <div className="column-header-done">
+                            <h2>Done</h2>
+                        </div>
+                        <TaskList
+                            tasks={tasks.done}
+                            columnId="done"
+                            onDragStart={handleDragStart}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            updateTask={updateTask}
+                        />
+                    </li>
+                </ul>
+
         </div>
-            </section>
+        </section>
 
             
             
