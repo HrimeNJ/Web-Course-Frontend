@@ -13,6 +13,10 @@ const Taskboard = () => {
     // 初始任务状态
     const [tasks, setTasks] = useState({ todo: [], doing: [], done: [] });
 
+    const [newTaskContent, setNewTaskContent] = useState('');
+    const [newTaskDescription, setNewTaskDescription] = useState('');
+    const [newTaskEvaluation, setNewTaskEvaluation] = useState('');
+
     useEffect(() =>{
         if(email) {
             axios.get(`http://localhost:7001/tasks?email=${email}`)
@@ -29,11 +33,6 @@ const Taskboard = () => {
                 });
         }
     }, [email])
-
-
-    const [newTaskContent, setNewTaskContent] = useState("");
-    const [editTaskId, setEditTaskId] = useState(null);
-    const [editTaskColumn, setEditTaskColumn] = useState(null);
 
     // 拖拽开始处理函数
     const handleDragStart = (event, taskId, fromColumn) => {
@@ -92,21 +91,33 @@ const Taskboard = () => {
     };
 
 
-    // 处理新增任务输入框内容变化
-    const handleNewTaskChange = (event) => {
-        setNewTaskContent(event.target.value);
+    // 处理任务内容变化
+    const handleNewTaskChange = (e) => {
+        setNewTaskContent(e.target.value);
+    };
+
+    // 处理任务描述变化
+    const handleNewTaskDescriptionChange = (e) => {
+        setNewTaskDescription(e.target.value);
+    };
+
+    // 处理任务评论变化
+    const handleNewTaskEvaluationChange = (e) => {
+        setNewTaskEvaluation(e.target.value);
     };
 
     // 处理新增任务提交
     const handleNewTaskSubmit = (event) => {
         event.preventDefault();
-        if (newTaskContent.trim() === "") {
+        if (newTaskContent.trim() === "" ) {
             return; // 如果任务内容为空，则不添加
         }
 
         const newTask = {
             id: `task-${Date.now()}`,
-            content: newTaskContent
+            content: newTaskContent,
+            description: newTaskDescription,
+            evaluation: newTaskEvaluation,
         };
 
         // 将新任务添加到待办任务列表
@@ -116,42 +127,75 @@ const Taskboard = () => {
 
         // 清空输入框
         setNewTaskContent("");
+        setNewTaskDescription("");
+        setNewTaskEvaluation("");
     };
 
-    const handleSaveTask = (event) => {
+    const handleSaveTask = async (event) => {
         event.preventDefault();
-        axios.post('http://localhost:7001/tasks', { email, password, tasks })  // 将tasks数据作为请求体发送
-            .then(response => {
-                console.log(response.data);  // 请求成功时的响应数据
-            })
-            .catch(error => {
-                console.error('Error saving tasks:', error);  // 处理请求失败的情况
+    
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('tasks', JSON.stringify(tasks));
+    
+        // 遍历任务，添加附件到 FormData
+        Object.keys(tasks).forEach(columnId => {
+            tasks[columnId].forEach(task => {
+                if (task.attachment) {
+                    formData.append('attachments', task.attachment, task.attachment.name);
+                }
             });
+        });
+    
+        try {
+            const response = await axios.post('http://localhost:7001/tasks', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error saving tasks:', error);
+        }
     };
     
+    
+    //按钮
     const handleLogoutButton = (event) => {
         handleSaveTask(event);
         navigate('/');
     }
 
+    const handleNewButton = (event) => {
+        const emptyTask = {
+            "todo": [], "doing": [], "done": []
+        };
+        setTasks(emptyTask);
+        handleSaveTask(event);
+    }
+
     //编辑面板数据
-    const updateTask = (columnId, taskId, updatedContent) => {
+    const updateTask = (columnId, taskId, updatedData) => {
         const updatedTasks = { ...tasks };
         const taskIndex = updatedTasks[columnId].findIndex(task => task.id === taskId);
-        console.log(updatedTasks, taskIndex, updatedContent);
+        console.log(updatedTasks, taskIndex, updatedData);
         console.log(columnId, taskId);
+        
         if (taskIndex !== -1) {
-            if(updatedContent && updatedContent.trim() !== "") {
-                updatedTasks[columnId][taskIndex].content = updatedContent;
-            }
-            else{
+            if (updatedData && updatedData.content && updatedData.content.trim() !== "") {
+                updatedTasks[columnId][taskIndex] = {
+                    ...updatedTasks[columnId][taskIndex],
+                    ...updatedData
+                };
+            } else {
                 updatedTasks[columnId].splice(taskIndex, 1);
                 // console.log("Task content cannot be empty!");
             }
             setTasks(updatedTasks);
         }
     };
-
+    
 
     return (
         <>
@@ -189,7 +233,8 @@ const Taskboard = () => {
                         </ul>
 
                         <button onClick={handleLogoutButton}>Logout</button>
-                        {/* Add tasks here */}
+                        <button onClick={handleNewButton}>New Board</button>
+                        
                         <button onClick={()=>navigate('/addtask')}>Add Task</button>
                         {/* Add task form here */}
                         <button onClick={()=>navigate('/edittask')}>Edit Task</button>
@@ -198,7 +243,6 @@ const Taskboard = () => {
                         {/* Add task form here */}
                         <button onClick={()=>navigate('/taskhistory')}>Task History</button>
                         {/* Add task form here */}
-                        <button onClick={()=>navigate('/taskgrouping')}>Task Grouping</button>
                         <button onClick={(event) => handleSaveTask(event)}>Save</button>
 
                     </div>

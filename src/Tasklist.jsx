@@ -1,20 +1,39 @@
-import { useEffect } from "react";
 import React, { useState } from "react";
 import "./Tasklist.css";
-
 
 const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask }) => {
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [taskEditContent, setTaskEditContent] = useState("");
+    const [taskDescription, setTaskDescription] = useState("");
+    const [taskEvaluation, setTaskEvaluation] = useState("");
     const [showOptions, setShowOptions] = useState(null);
     const [showButton, setShowButton] = useState(true);
+    const [attachmentFile, setAttachmentFile] = useState(null);
 
     const handleTaskEditChange = (event) => {
         setTaskEditContent(event.target.value);
     };
 
+    const handleDescriptionChange = (event) => {
+        setTaskDescription(event.target.value);
+    };
+
+    const handleEvaluationChange = (event) => {
+        setTaskEvaluation(event.target.value);
+    };
+
+    const handleAttachmentChange = (event) => {
+        setAttachmentFile(event.target.files[0]);
+    };
+
     const handleTaskEditSubmit = (taskId) => {
-        updateTask(columnId, taskId, taskEditContent);
+        const updatedTask = {
+            content: taskEditContent,
+            description: taskDescription,
+            evaluation: taskEvaluation,
+            attachment: attachmentFile
+        };
+        updateTask(columnId, taskId, updatedTask);
         setEditingTaskId(null); 
         setShowButton(true);
     };
@@ -26,13 +45,16 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
     const handleEditClick = (task) => {
         setEditingTaskId(task.id);
         setTaskEditContent(task.content);
+        setTaskDescription(task.description);
+        setTaskEvaluation(task.evaluation);
+        setAttachmentFile(null);
         setShowOptions(null);
         setShowButton(false);
-        // console.log(showOptions);
     };
 
     const handleViewClick = (task) => {
-        alert(`查看任务: ${task.content}`);
+        alert(`任务: ${task.content}\n描述: ${task.description}\n评价: ${task.evaluation}\n
+            附件: ${task.attachment ? task.attachment.name : '无'}`);
         setShowOptions(null);
         setShowButton(true);
     };
@@ -48,7 +70,6 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
             handleTaskEditSubmit(taskId);
         }
     };
-    
 
     return (
         <ul className="tasklist" id={columnId}
@@ -62,17 +83,36 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
                         
                         {editingTaskId === task.id ? (
                             <form className="taskform">
-                            <input
-                                type="text"
-                                value={taskEditContent}
-                                onChange={handleTaskEditChange}
-                                onKeyDown={(event) => handleKeyDown(event, task.id)}
-                                onBlur={() => handleTaskEditSubmit(task.id)}
-                            />
-                            <button className="tasksubmit" onClick={() => handleTaskEditSubmit(task.id)}>Submit</button>
+                                <input
+                                    type="text"
+                                    value={taskEditContent}
+                                    onChange={handleTaskEditChange}
+                                    onKeyDown={(event) => handleKeyDown(event, task.id)}
+                                    onBlur={() => handleTaskEditSubmit(task.id)}
+                                />
+                                <textarea
+                                    placeholder="任务描述"
+                                    value={taskDescription}
+                                    onChange={handleDescriptionChange}
+                                    onBlur={() => handleTaskEditSubmit(task.id)}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="任务评价"
+                                    value={taskEvaluation}
+                                    onChange={handleEvaluationChange}
+                                    onBlur={() => handleTaskEditSubmit(task.id)}
+                                />
+                                <input
+                                    type="file"
+                                    onChange={handleAttachmentChange}
+                                />
+                                <button className="tasksubmit" onClick={() => handleTaskEditSubmit(task.id)}>提交</button>
                             </form>
                         ) : (
-                            <p>{task.content}</p>
+                            <>
+                                <p>{task.content}</p>
+                            </>
                         )}
                         
                         {showButton && <button 
@@ -87,7 +127,7 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
                         )}
                     </li>
                 )))
-                : (<li className="task" id="Notask"> No tasks </li>)
+                : (<li className="task" id="Notask">没有任务</li>)
             }
         </ul>
     );
