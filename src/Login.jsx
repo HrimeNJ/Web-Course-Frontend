@@ -7,17 +7,25 @@ const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleLogin = async () => {
         try {
             const response = await axios.post('http://localhost:7001/login', {
                 email,
                 password
+            }).then(response =>{
+                if(response.data.success){
+                    console.log("Logging in with", { email, password });
+                    navigate('/taskboard', { state: { email, password } });
+                    setEmail("")
+                    setPassword("")
+                    setErrorMessage("")
+                }else{
+                    setErrorMessage("Email or password is incorrect!")
+                }
+
             });
-            console.log("Logging in with", { email, password });
-            navigate('/taskboard');
-            setEmail("")
-            setPassword("")
         } catch (error) {
             console.log('Login Failed', error.response ? error.response.data : error.message);
             navigate('/');
@@ -53,6 +61,8 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
+                {errorMessage && <p className={styles.errorMessage}> {errorMessage} </p>}
+
             </section>
 
             <section className={styles.loginbutton}>

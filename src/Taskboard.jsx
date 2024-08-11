@@ -1,31 +1,35 @@
 import { useNavigate } from "react-router-dom";
 import React, {useState} from "react";
 import axios from "axios";
+import { useLocation } from 'react-router-dom';
 import "./Taskboard.css";
 import { useEffect } from "react";
 import TaskList from "./Tasklist";
-import EditTask from "./EditTask"; 
 
 const Taskboard = () => {
     const navigate = useNavigate();
-    
+    const location = useLocation();
+    const { email, password } = location.state || {};
     // 初始任务状态
-    const [tasks, setTasks] = useState({
-        todo: [
-            { id: 'task-1', content: 'Analysis' },
-            { id: 'task-2', content: 'Design' },
-            { id: 'task-3', content: 'Development' },
-            { id: 'task-4', content: 'Testing' }
-        ],
-        doing: [
-            { id: 'task-5', content: 'Implement' },
-            { id: 'task-6', content: 'Bug Fixing' }
-        ],
-        done: [
-            { id: 'task-7', content: 'Release' },
-            { id: 'task-8', content: 'Review' }
-        ]
-    });
+    const [tasks, setTasks] = useState({ todo: [], doing: [], done: [] });
+
+    useEffect(() =>{
+        if(email) {
+            axios.get(`http://localhost:7001/tasks?email=${email}`)
+                .then(response => {
+                    if(response.data.success){
+                        setTasks(response.data.tasks);
+                    }
+                    else {
+                        console.log("Tasks are nothing");
+                    }
+                })
+                .catch(error => {
+                    console.log("Error fetching tasks", error);
+                });
+        }
+    }, [email])
+
 
     const [newTaskContent, setNewTaskContent] = useState("");
     const [editTaskId, setEditTaskId] = useState(null);
@@ -116,20 +120,34 @@ const Taskboard = () => {
 
     const handleSaveTask = (event) => {
         event.preventDefault();
-        // 保存任务列表
-        // TODO: 实现任务列表的持久化
-        axios.post('http://localhost:7001/tasks', tasks => tasks)
-       .then(response => console.log(response))
-
+        axios.post('http://localhost:7001/tasks', { email, password, tasks })  // 将tasks数据作为请求体发送
+            .then(response => {
+                console.log(response.data);  // 请求成功时的响应数据
+            })
+            .catch(error => {
+                console.error('Error saving tasks:', error);  // 处理请求失败的情况
+            });
     };
+    
+    const handleLogoutButton = (event) => {
+        handleSaveTask(event);
+        navigate('/');
+    }
 
     //编辑面板数据
     const updateTask = (columnId, taskId, updatedContent) => {
         const updatedTasks = { ...tasks };
         const taskIndex = updatedTasks[columnId].findIndex(task => task.id === taskId);
-    
+        console.log(updatedTasks, taskIndex, updatedContent);
+        console.log(columnId, taskId);
         if (taskIndex !== -1) {
-            updatedTasks[columnId][taskIndex].content = updatedContent;
+            if(updatedContent && updatedContent.trim() !== "") {
+                updatedTasks[columnId][taskIndex].content = updatedContent;
+            }
+            else{
+                updatedTasks[columnId].splice(taskIndex, 1);
+                // console.log("Task content cannot be empty!");
+            }
             setTasks(updatedTasks);
         }
     };
@@ -170,7 +188,7 @@ const Taskboard = () => {
 
                         </ul>
 
-                        <button onClick={()=>navigate('/login')}>Logout</button>
+                        <button onClick={handleLogoutButton}>Logout</button>
                         {/* Add tasks here */}
                         <button onClick={()=>navigate('/addtask')}>Add Task</button>
                         {/* Add task form here */}

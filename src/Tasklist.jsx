@@ -37,8 +37,8 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
         setShowButton(true);
     };
 
-    const handleDeleteClick = (taskId) => {
-        updateTask(columnId, taskId, null);
+    const handleDeleteClick = (task) => {
+        updateTask(columnId, task.id, null);
         setShowOptions(null);
         setShowButton(true);
     };

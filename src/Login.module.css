@@ -33,6 +33,7 @@ section{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .formGroup {
@@ -53,7 +54,7 @@ section{
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1rem;
-    color: white;
+    color: #333;
 }
 
 .formGroup input:focus {
@@ -84,6 +85,15 @@ section{
 
 .loginbutton button:hover {
     background-color: #0056b3;
+}
+
+.errorMessage{
+    color: red;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    position: absolute;
+    bottom: 24px;
 }
 
 /* Link styles */
