@@ -15,16 +15,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Hrime"
+          git config --global user.email "tailhrime@gmail.com"
+
 
       - name: Build website
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4  # 使用最新的 v4 版本
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
