@@ -79,7 +79,7 @@ const App = () => {
       </section>
     </main>
 
-    <footer>
+    <footer className={styles.WelcomeFooter}>
       Copyright @ 13934469170 All rights reserved<br/>
       Contact with us by email 1970902125@qq.com
     </footer>

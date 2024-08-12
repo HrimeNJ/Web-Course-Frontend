@@ -153,6 +153,7 @@ const Taskboard = () => {
             //     const response2 = await axios.post('http://localhost:7001/tasks/files', formData);
             //     console.log('Files saved:', response2.data);
             // }
+            alert('Saved successfully!');
         } catch (error) {
             console.error('Error saving tasks:', error);
         }
@@ -207,12 +208,11 @@ const Taskboard = () => {
                         <li><a href="http://localhost:5173/taskboard/theboard">Projects</a></li>
                         <li><a href="#">Memebers</a></li>
                         <li><a href="#">Growth</a></li>
-                        <li><a href="#">WebSite</a></li>
+                        <li><a href="https://github.com/HrimeNJ">WebSite</a></li>
                     </ul>
                 </div>
-                <div className="footer">
-                    <footer>如有差误不妥之处，<br/>请联系13934469170。</footer>
-                </div>
+                <footer className="bottomInfo">如有差误不妥之处，<br/>请联系电话： <br/> 13934469170。</footer>
+
 
             </section>
 
@@ -223,26 +223,23 @@ const Taskboard = () => {
                     </div>
                     <div>
                         <ul>
-                            <li className="boarditems"><a href="#">Abstract</a></li>
-                            <li className="boarditems"><a href="#">Task Board</a></li>
-                            <li className="boarditems"><a href="#">TaskList</a></li>
-                            <li className="boarditems"><a href="#">Contact us</a></li>
-                            <li className="boarditems"><a href="#">Log out</a></li>
+                            <li className="topSectionItems"><a href="#">Abstract</a></li>
+                            <li className="topSectionItems"><a href="#">Task Board</a></li>
+                            <li className="topSectionItems"><a href="#">Contact us</a></li>
+                            <li className="topSectionItems"><a href="#">Log out</a></li>
+                            <li className="topSectionItems"><a href="#">TaskList</a></li>
 
                         </ul>
 
-                        <button onClick={handleLogoutButton}>Logout</button>
-                        <button onClick={handleNewButton}>New Board</button>
+                        <button className="topSectionButton" onClick={handleLogoutButton}>Logout</button>
+                        <button className="topSectionButton" onClick={handleNewButton}>New Board</button>
                         
-                        <button onClick={()=>navigate('/addtask')}>Add Task</button>
+
+                        <button className="topSectionButton" onClick={()=>navigate('/deletetask')}>Delete Task</button>
                         {/* Add task form here */}
-                        <button onClick={()=>navigate('/edittask')}>Edit Task</button>
+                        <button className="topSectionButton" onClick={()=>navigate('/taskhistory')}>Task History</button>
                         {/* Add task form here */}
-                        <button onClick={()=>navigate('/deletetask')}>Delete Task</button>
-                        {/* Add task form here */}
-                        <button onClick={()=>navigate('/taskhistory')}>Task History</button>
-                        {/* Add task form here */}
-                        <button onClick={(event) => handleSaveTask(event)}>Save</button>
+                        <button className="topSectionButton" onClick={(event) => handleSaveTask(event)}>Save</button>
 
                     </div>
                 </div>

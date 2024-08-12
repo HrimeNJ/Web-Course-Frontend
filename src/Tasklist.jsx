@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Tasklist.css";
-// import Modal from './Modal'; 
+import Modal from './Modal'; 
 
 const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask }) => {
     const [editingTaskId, setEditingTaskId] = useState(null);
@@ -11,6 +11,7 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
     const [showButton, setShowButton] = useState(true);
     const [attachmentFile, setAttachmentFile] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [taskToEdit, setTaskToEdit] = useState(null);
 
 
     //任务编辑
@@ -50,9 +51,9 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
         updateTask(columnId, taskId, updatedTask);
         setEditingTaskId(null); 
         setShowButton(true);
-        console.log(attachmentFile.name);
-
+        
         if (attachmentFile) {
+            console.log(attachmentFile.name);
             const sanitizedFileName = attachmentFile.name.replace(/[^a-zA-Z0-9.\-]/g, '_'); // 替换非法字符
             const formData = new FormData();
             formData.append("attachment", attachmentFile, sanitizedFileName);
@@ -68,8 +69,16 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
         }
 
         setAttachmentFile(null);
-        setShowModal(false);
+        // setShowModal(false);
     };
+
+    const handleCloseModal = () =>{
+        setShowButton(true);
+        setShowModal(false);
+        setTaskToEdit(null);
+        setAttachmentFile(null);
+        setEditingTaskId(null); 
+    }
 
     //任务选择的点击
     const handleOptionsClick = (taskId) => {
@@ -88,6 +97,7 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
         setShowOptions(null);
         setShowButton(false);
         setShowModal(true);
+        setTaskToEdit(task);
     };
 
     //任务查看的点击
@@ -113,70 +123,70 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
     };
 
     return (
-        <ul className="tasklist" id={columnId}
-            onDragOver={(event) => onDragOver(event)}
-            onDrop={(event) => onDrop(event, columnId)}>
-            {tasks && tasks.length > 0 ? 
-                (tasks.map((task) => (
-                    <li key={task.id} className="task"
-                        draggable
-                        onDragStart={(event) => onDragStart(event, task.id, columnId)}>
-                        
-                        {editingTaskId === task.id ? (
-                            <form className="taskform" onSubmit={(event) => 
-                                {event.preventDefault(); handleTaskEditSubmit(task.id)} }>
-                                <input
-                                    type="text"
-                                    value={taskEditContent}
-                                    onChange={handleTaskEditChange}
-                                    onKeyDown={(event) => handleKeyDown(event, task.id)}
-                                    onBlur={() => handleTaskEditSubmit(task.id)}
-                                />
-                                <textarea
-                                    placeholder="任务描述"
-                                    value={taskDescription}
-                                    onChange={handleDescriptionChange}
-                                    onBlur={() => handleTaskEditSubmit(task.id)}
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="任务评价"
-                                    value={taskEvaluation}
-                                    onChange={handleEvaluationChange}
-                                    onBlur={() => handleTaskEditSubmit(task.id)}
-                                />
-                                <input
-                                    type="file"
-                                    onChange={handleAttachmentChange}
-                                />
-                                <button className="tasksubmit" type="submit">提交</button>
-                            </form>
-                        ) : (
-                            <>
-                                <p>{task.content}</p>
-                                {attachmentFile && (
-                                        <a href={URL.createObjectURL(attachmentFile)} download>
-                                            {attachmentFile.name}
-                                        </a>
-                                )}
-                            </>
-                        )}
-                        
-                        {showButton && <button 
-                            className="options-button" onClick={() => handleOptionsClick(task.id)}>⋮</button>}
-                        
-                        {showOptions === task.id && (
-                            <div className="options-menu">
-                                <button onClick={() => handleViewClick(task)}>查看</button>
-                                <button onClick={() => handleEditClick(task)}>修改</button>
-                                <button onClick={() => handleDeleteClick(task)}>删除</button>
-                            </div>
-                        )}
-                    </li>
-                )))
-                : (<li className="task" id="Notask">没有任务</li>)
-            }
-        </ul>
+        <>
+            <ul className="tasklist" id={columnId}
+                onDragOver={(event) => onDragOver(event)}
+                onDrop={(event) => onDrop(event, columnId)}>
+                {tasks && tasks.length > 0 ? 
+                    (tasks.map((task) => (
+                        <li key={task.id} className="task"
+                            draggable
+                            onDragStart={(event) => onDragStart(event, task.id, columnId)}>
+                            
+                            <p>{task.content}</p>
+                            {attachmentFile && (
+                                    <a href={URL.createObjectURL(attachmentFile)} download>
+                                        {attachmentFile.name}
+                                    </a>
+                            )}
+  
+                            {showButton && <button 
+                                className="options-button" onClick={() => handleOptionsClick(task.id)}>⋮</button>}
+                            
+                            {showOptions === task.id && (
+                                <div className="options-menu">
+                                    <button onClick={() => handleViewClick(task)}>查看</button>
+                                    <button onClick={() => handleEditClick(task)}>修改</button>
+                                    <button onClick={() => handleDeleteClick(task)}>删除</button>
+                                </div>
+                            )}
+                        </li>
+                    )))
+                    : (<li className="task" id="Notask">没有任务</li>)
+                }
+            </ul>
+
+            {/* 显示弹窗 */}
+            <Modal show={showModal} onClose={handleCloseModal}>
+                {taskToEdit && (
+                    <form className="taskform" onSubmit={(event) => 
+                    {event.preventDefault(); handleTaskEditSubmit(taskToEdit.id); handleCloseModal();} }>
+                    <input
+                        type="text"
+                        value={taskEditContent}
+                        onChange={handleTaskEditChange}
+                        onKeyDown={(event) => handleKeyDown(event, taskToEdit.id)}
+                    />
+                    <textarea
+                        placeholder="任务描述"
+                        value={taskDescription}
+                        onChange={handleDescriptionChange}
+                    />
+                    <input
+                        type="text"
+                        placeholder="任务评价"
+                        value={taskEvaluation}
+                        onChange={handleEvaluationChange}
+                    />
+                    <input
+                        type="file"
+                        onChange={handleAttachmentChange}
+                    />
+                    <button className="tasksubmit" type="submit">提交</button>
+                    </form>
+                )}
+            </Modal>
+        </>
     );
 };
 

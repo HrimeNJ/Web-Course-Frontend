@@ -141,7 +141,7 @@ header ul{
   line-height: 1.8em;
 }
 
-footer{
+.WelcomeFooter{
   background-color: #000000;
   color: #B7B7B7;
   font-size: 14px;
@@ -149,6 +149,7 @@ footer{
   display: flex;
   justify-content: center;
   align-items: center;
+  line-height: 20px;
 }
 
 .Intruduction{

@@ -1,4 +1,5 @@
 import React from 'react';
+import "./Modal.css";
 
 const Modal = ({ show, onClose, children }) => {
   if (!show) {
@@ -9,6 +10,7 @@ const Modal = ({ show, onClose, children }) => {
     <div className="modal-overlay">
       <div className="modal">
         <button className="modal-close" onClick={onClose}>×</button>
+        <h2>编辑任务面板</h2>
         <div className="modal-content">
           {children}
         </div>

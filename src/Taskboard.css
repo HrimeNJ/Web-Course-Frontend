@@ -1,132 +1,121 @@
-*{
+/* 重置样式 */
+* {
     padding: 0;
     margin: 0;
-}
-
-main.Taskboard{
-    background-color: white !important;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* 主 Taskboard 样式 */
+  main.Taskboard {
+    background-color: #f0f2f5;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
-    text-align: center;
-}
-
-section.taskboard{
-    background-color: #e7f9ff;
+  }
+  
+  /* 任务板区域 */
+  section.taskboard {
+    background-color: #fff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
     height: 100%;
     width: 100%;
     margin-left: 160px;
-}
-
-div.topSection{
+    padding: 20px;
+    border-left: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  div.topSection {
     width: 100%;
     border-bottom: 2px solid #c7dae4;
     border-top: 2px solid #c7dae4;
-    position: relative;
     display: flex;
-    margin-top: 30px;
-}
-
-div.board{
-    margin-top: 30px;
-    display: flex;
-}
-
-div.topSection h1 {
-    font-size: 48px;
-    text-align: center;
-}
-
-div.topSection ul{
-    display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
-}
-
-div.topSection li{
+    padding: 20px;
+  }
+  
+  div.topSection h1 {
+    font-size: 32px;
+    color: #333;
+  }
+  
+  div.topSection ul {
+    display: flex;
+    align-items: center;
+  }
+  
+  div.topSection li {
     list-style: none;
     margin-right: 20px;
-}
-
-div.topSection a{
+  }
+  
+  .topSectionItems {
     text-decoration: none;
-    color: #44546f;
+    color: #646cff;
     border: #646cff 1px solid;
     border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-div.topSection button {
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .topSectionItems:hover {
+    background-color: #646cff;
+    color: white;
+  }
+  
+  .topSectionButton {
     background-color: lightblue;
     color: black;
-    border-radius: 5%;
+    border-radius: 5px;
     border: solid 1px #000000;
     margin-right: 20px;
-    line-height: 20px;
-    font-size: 12px;
-    margin-top: 15px;
-}
-
-div.topSection button:hover{
+    font-size: 14px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .topSectionButton:hover {
     background-color: #646cff;
-}
-
-div.topSection button:active{
-    background-color: #44546f;
     color: white;
-}
-
-ul.tasklist{
-    background-color: antiquewhite;
-    text-align: center;
-    list-style: none;
+  }
+  
+  div.board {
+    margin-top: 30px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-li.task{
-    list-style: none;
-    
-}
-
-/* Taskboard.css */
-
-.board {
-    display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    width: 100%;
     padding: 20px;
     background-color: #f4f4f4;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.columns {
+  }
+  
+  /* 任务栏样式 */
+  .columns {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     width: 100%;
     list-style-type: none;
     padding: 0;
     margin: 0;
-}
-
-.column-to-column {
+  }
+  
+  .column-to-column {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 30%;
-    padding: 10px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    margin-right: 30px;
-}
-
-.column-header-todo{
+  }
+  
+  .column-header-todo {
     background-color: #ff872f;
     padding: 10px;
     color: white;
@@ -134,9 +123,9 @@ li.task{
     text-align: center;
     font-size: 1.2em;
     font-weight: bold;
-}
-
-.column-header-doing{
+  }
+  
+  .column-header-doing {
     background-color: #13a4d9;
     padding: 10px;
     color: white;
@@ -144,9 +133,9 @@ li.task{
     text-align: center;
     font-size: 1.2em;
     font-weight: bold;
-}
-
-.column-header-done{
+  }
+  
+  .column-header-done {
     background-color: #4caf50;
     padding: 10px;
     color: white;
@@ -154,70 +143,78 @@ li.task{
     text-align: center;
     font-size: 1.2em;
     font-weight: bold;
-}
-
-.tasklist {
+  }
+  
+  /* 任务列表样式 */
+  .tasklist {
     padding: 10px;
     margin: 0;
     list-style-type: none;
     overflow-y: auto;
     max-height: 400px;
-}
-
-.task {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .task {
     background-color: #e3f2fd;
     border-radius: 4px;
     padding: 10px;
     margin: 10px 0;
     font-size: 1em;
     transition: background-color 0.3s ease;
-}
-
-.task p {
+  }
+  
+  .task p {
     margin: 0;
-}
-
-.task:hover {
+  }
+  
+  .task:hover {
     background-color: #bbdefb;
-}
-
-/* 按钮样式 */
-.column-button {
+  }
+  
+  /* 删除按钮 */
+  .column-button {
     display: flex;
     justify-content: center;
     padding: 10px;
-}
-
-.delete-button {
+  }
+  
+  .delete-button {
     background-color: #f44336;
-    color: black;
+    color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-size: 1em;
-}
-
-.delete-button:hover {
+  }
+  
+  .delete-button:hover {
     background-color: #d32f2f;
-}
-
-.submit{
+  }
+  
+  /* 提交按钮 */
+  .submit {
     background-color: #e3f2fd;
-}
-
-#Notask{
+  }
+  
+  /* 没有任务提示 */
+  #Notask {
     font-size: 1.2em;
     font-weight: bold;
     color: #fe7c1f;
     margin-top: 20px;
     background-color: #d7dfe3;
-}
-
-/* 左边栏 */
-section.ProjectsColumn{
-    background-color: antiquewhite;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  
+  /* 左侧项目栏 */
+  section.ProjectsColumn {
+    background-color: #ffe9c4;
     position: absolute;
     left: 0;
     top: 0;
@@ -225,56 +222,53 @@ section.ProjectsColumn{
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    
-}
-
-section.ProjectsColumn div{
+    border-right: 1px solid #ccc;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  section.ProjectsColumn div.h {
+    background-color: #f1b36c;
+    font-size: 36px;
     width: 100%;
-}
-
-section.ProjectsColumn div.h{
-    background-color: rgb(241, 179, 108);
-    font-size: 48px;
-    position: absolute;
-    top: 0vw;
     height: 120px;
     text-align: center;
     line-height: 120px;
-    border:  1px;
-}
-
-section.ProjectsColumn ul{
+    border-bottom: 1px solid #ddd;
+  }
+  
+  section.ProjectsColumn ul {
     list-style-type: none;
-    margin-left: 0px;
-    padding-left: 10px;
-    position: relative;
-    top: -160px
-}
-
-section.ProjectsColumn ul li a {
+    margin-top: 20px;
+    padding: 0;
+    width: 100%;
+  }
+  
+  section.ProjectsColumn ul li a {
     text-decoration: none;
     color: #24abab;
     font-size: 16px;
     font-weight: 800;
-    display: inline-block;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    width: 100%;
-    margin-left: -5px;
-    padding-left: 10px;
-}
-
-section.ProjectsColumn ul li a:hover {
+    display: block;
+    padding: 10px 15px;
+    transition: background-color 0.3s, border-left 0.3s;
+  }
+  
+  section.ProjectsColumn ul li a:hover {
     background: #eddd82;
     border-left: solid 8px #6a75eb;
-    margin-left: -10px;
-    width: 96%;
-}
-
-section.ProjectsColumn footer{
+  }
+  
+.bottomInfo {
     position: absolute;
     bottom: 0;
-    width: 160px;
-}
+    width: 100%;
+    padding: 10px;
+    background-color: #f1b36c;
+    text-align: center;
+    color: black;
+    font-size: 14px;
+    line-height: 28px;
+    border-top: 1px solid #ddd;
+  }
+  
