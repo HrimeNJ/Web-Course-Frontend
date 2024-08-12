@@ -23,19 +23,42 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
     };
 
     const handleAttachmentChange = (event) => {
-        setAttachmentFile(event.target.files[0]);
+        if (event.target.files && event.target.files.length > 0) {
+            setAttachmentFile(event.target.files[0]);
+            console.log("File uploaded: ", event.target.files[0].name);
+        } else {
+            console.log("No file selected");
+        }
     };
+    
 
     const handleTaskEditSubmit = (taskId) => {
         const updatedTask = {
             content: taskEditContent,
             description: taskDescription,
             evaluation: taskEvaluation,
-            attachment: attachmentFile
+            hasattachmentFile: attachmentFile ? true : false,
         };
         updateTask(columnId, taskId, updatedTask);
         setEditingTaskId(null); 
         setShowButton(true);
+        console.log(attachmentFile.name);
+
+        if (attachmentFile) {
+            const sanitizedFileName = attachmentFile.name.replace(/[^a-zA-Z0-9.\-]/g, '_'); // 替换非法字符
+            const formData = new FormData();
+            formData.append("attachment", attachmentFile, sanitizedFileName);
+            console.log(formData.get("attachment"));
+            
+            fetch(`http://localhost:7001/upload/${taskId}`, {
+                method: "POST",
+                body: formData,
+            })
+            .then((response) => response.json())
+            .then((data) => console.log("File uploaded successfully: ", data))
+            .catch(error => console.log("File upload fail ", error));
+        }
+        
     };
 
     const handleOptionsClick = (taskId) => {
@@ -82,7 +105,8 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
                         onDragStart={(event) => onDragStart(event, task.id, columnId)}>
                         
                         {editingTaskId === task.id ? (
-                            <form className="taskform">
+                            <form className="taskform" onSubmit={(event) => 
+                                {event.preventDefault(); handleTaskEditSubmit(task.id)} }>
                                 <input
                                     type="text"
                                     value={taskEditContent}
@@ -107,11 +131,16 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
                                     type="file"
                                     onChange={handleAttachmentChange}
                                 />
-                                <button className="tasksubmit" onClick={() => handleTaskEditSubmit(task.id)}>提交</button>
+                                <button className="tasksubmit" type="submit">提交</button>
                             </form>
                         ) : (
                             <>
                                 <p>{task.content}</p>
+                                {attachmentFile && (
+                                        <a href={URL.createObjectURL(attachmentFile)} download>
+                                            {attachmentFile.name}
+                                        </a>
+                                )}
                             </>
                         )}
                         

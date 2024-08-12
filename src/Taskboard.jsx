@@ -12,7 +12,7 @@ const Taskboard = () => {
     const { email, password } = location.state || {};
     // 初始任务状态
     const [tasks, setTasks] = useState({ todo: [], doing: [], done: [] });
-
+    const [taskfiles, setTaskfiles] = useState({});
     const [newTaskContent, setNewTaskContent] = useState('');
     const [newTaskDescription, setNewTaskDescription] = useState('');
     const [newTaskEvaluation, setNewTaskEvaluation] = useState('');
@@ -132,33 +132,32 @@ const Taskboard = () => {
     };
 
     const handleSaveTask = async (event) => {
-        event.preventDefault();
-    
-        const formData = new FormData();
-        formData.append('email', email);
-        formData.append('password', password);
-        formData.append('tasks', JSON.stringify(tasks));
-    
-        // 遍历任务，添加附件到 FormData
-        Object.keys(tasks).forEach(columnId => {
-            tasks[columnId].forEach(task => {
-                if (task.attachment) {
-                    formData.append('attachments', task.attachment, task.attachment.name);
-                }
-            });
-        });
-    
+       event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:7001/tasks', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+            // 1. 发送普通数据 (email, password, tasks)
+            const response1 = await axios.post('http://localhost:7001/tasks/', {
+                email,
+                password,
+                tasks,
             });
-            console.log(response.data);
+            console.log('Data saved:', response1.data);
+    
+            // // 2. 发送文件数据
+            // if (taskfiles) {
+            //     const formData = new FormData();
+            //     Object.keys(taskfiles).forEach(taskId => {
+            //         const file = taskfiles[taskId];
+            //         formData.append(`attachments[${taskId}]`, file);
+            //     });
+    
+            //     const response2 = await axios.post('http://localhost:7001/tasks/files', formData);
+            //     console.log('Files saved:', response2.data);
+            // }
         } catch (error) {
             console.error('Error saving tasks:', error);
         }
     };
+    
     
     
     //按钮
@@ -179,9 +178,8 @@ const Taskboard = () => {
     const updateTask = (columnId, taskId, updatedData) => {
         const updatedTasks = { ...tasks };
         const taskIndex = updatedTasks[columnId].findIndex(task => task.id === taskId);
-        console.log(updatedTasks, taskIndex, updatedData);
-        console.log(columnId, taskId);
-        
+    
+        console.log(taskIndex, updatedTasks, updatedData);
         if (taskIndex !== -1) {
             if (updatedData && updatedData.content && updatedData.content.trim() !== "") {
                 updatedTasks[columnId][taskIndex] = {
@@ -190,11 +188,12 @@ const Taskboard = () => {
                 };
             } else {
                 updatedTasks[columnId].splice(taskIndex, 1);
-                // console.log("Task content cannot be empty!");
             }
             setTasks(updatedTasks);
+
         }
     };
+    
     
 
     return (
@@ -263,6 +262,7 @@ const Taskboard = () => {
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             updateTask={updateTask}
+                            taskflies={taskfiles}
                         />
                         {/* 新增任务表单 */}
                         <form onSubmit={handleNewTaskSubmit}>
@@ -288,6 +288,7 @@ const Taskboard = () => {
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             updateTask={updateTask}
+                            taskflies={taskfiles}
                         />
                     </li>
 
@@ -303,6 +304,7 @@ const Taskboard = () => {
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             updateTask={updateTask}
+                            taskflies={taskfiles}
                         />
                     </li>
                 </ul>
