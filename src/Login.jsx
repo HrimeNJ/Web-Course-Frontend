@@ -27,6 +27,8 @@ const Login = () => {
         } catch (error) {
             setErrorMessage('Login Failed');
         }
+        localStorage.setItem('email', email);
+        localStorage.setItem('password', password);
     };
 
     return (

@@ -63,7 +63,7 @@ const App = () => {
         <h2>高效看板，敏捷使用！</h2>
         <p>在看板上可视化任务、限制进行中的工作、识别瓶颈
           <br/> 来改进工作流程，帮您和团队顺利交付！</p>
-        <a href='http://localhost:5173/Login'>Get Started</a>
+        <a href='/Login'>Get Started</a>
       </section>
 
       <section className={styles.slogan}>

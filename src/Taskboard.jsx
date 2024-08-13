@@ -9,33 +9,56 @@ import TaskList from "./Tasklist";
 const Taskboard = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { email, password } = location.state || {};
+    const email = location.state?.email || localStorage.getItem('email');
+    const password = location.state?.password || localStorage.getItem('password');
+
     // 初始任务状态
+    const [panels, setPanels] = useState([{ todo: [], doing: [], done: [] }]);
     const [tasks, setTasks] = useState({ todo: [], doing: [], done: [] });
     const [taskfiles, setTaskfiles] = useState({});
     const [newTaskContent, setNewTaskContent] = useState('');
     const [newTaskDescription, setNewTaskDescription] = useState('');
     const [newTaskEvaluation, setNewTaskEvaluation] = useState('');
+    const [showProjects, setShowProjects] = useState(false); 
+    const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (email && password) {
+            // 将 email 和 password 保存到 localStorage
+            localStorage.setItem('email', email);
+            localStorage.setItem('password', password);
+        }
+    }, [email, password]);
+    
+    useEffect(() => {
         if (email) {
+            // 将 email 和 password 保存到 localStorage
+            const email = location.state?.email || localStorage.getItem('email');
+            const password = location.state?.password || localStorage.getItem('password');
             axios.get(`http://localhost:7001/tasks?email=${email}`)
                 .then(response => {
                     if(response.data.success){
-                        const fetchedTasks = response.data.tasks;
-                        setTasks(fetchedTasks);
+                        const fetchedPanels = response.data.panels;
+                        setPanels(fetchedPanels);
+                        if (fetchedPanels.length > 0) {
+                            const firstPanelTasks = fetchedPanels[0];  // 获取第一个面板
+                            setTasks(firstPanelTasks);
+                          }
     
                         // 获取所有有附件的任务ID
                         const taskIdsWithAttachments = [];
-                        Object.keys(fetchedTasks).forEach(stage => {
-                            fetchedTasks[stage].forEach(task => {
-                                if (task.hasattachmentFile) {
-                                    taskIdsWithAttachments.push(task.id);
-                                }
+                        
+                        for(let i = 0; i < fetchedPanels.length; i++) {
+                            const fetchedTasks = fetchedPanels[i];
+                            Object.keys(fetchedTasks).forEach(stage => {
+                                fetchedTasks[stage].forEach(task => {
+                                    if (task.hasattachmentFile) {
+                                        taskIdsWithAttachments.push(task.id);
+                                    }
+                                });
                             });
-                        });
-    
+                        }
                         // 并行获取所有附件
                         Promise.all(taskIdsWithAttachments.map(taskId => fetchTaskFiles(taskId)))
                             .then(() => {
@@ -48,7 +71,7 @@ const Taskboard = () => {
                             });
                     }
                     else {
-                        console.log("Tasks are nothing");
+                        console.log("Panels are nothing");
                         setLoading(false);
                     }
                 })
@@ -100,48 +123,60 @@ const Taskboard = () => {
     // 放置任务处理函数
     const handleDrop = (event, targetColumn) => {
         event.preventDefault();
+    
         const taskId = event.dataTransfer.getData("taskId");
         const fromColumn = event.dataTransfer.getData("fromColumn");
-
+    
         if (fromColumn !== targetColumn) {
-            // 处理任务从一个列到另一个列的移动
-            const updatedTasks = { ...tasks };
+            // 深拷贝 tasks，避免直接引用
+            const updatedTasks = {
+                ...tasks,
+                [fromColumn]: [...tasks[fromColumn]], // 深拷贝来源列
+                [targetColumn]: [...tasks[targetColumn]] // 深拷贝目标列
+            };
+    
+            // 找到并从来源列中移除任务
             const taskToMove = updatedTasks[fromColumn].find(task => task.id === taskId);
-
-            // 从原始列中移除任务
             updatedTasks[fromColumn] = updatedTasks[fromColumn].filter(task => task.id !== taskId);
-
-            // 获取放置的位置
+    
+            // 计算要插入的索引
             const taskItems = document.querySelectorAll(`#${targetColumn} .task`);
             let insertAtIndex = taskItems.length;
-
-            console.log("Length: ", insertAtIndex);
-
-            // 计算插入的位置
+    
             for (let i = 0; i < taskItems.length; i++) {
                 const taskItem = taskItems[i];
                 const taskItemRect = taskItem.getBoundingClientRect();
-
-                // 调试输出位置和尺寸信息
-                console.log("Task Item Rect:", taskItemRect);
-                console.log("Client Y:", event.clientY);
-
+    
                 if (event.clientY < taskItemRect.top + taskItemRect.height / 2) {
                     insertAtIndex = i;
                     break;
                 }
             }
-
+    
             // 在目标列的指定位置插入任务
             updatedTasks[targetColumn].splice(insertAtIndex, 0, taskToMove);
-            // console.log("update tasks", updatedTasks)
-
+    
+            // 更新状态
             setTasks(updatedTasks);
-            // console.log("tasks", tasks);
-            // console.log(updatedTasks==tasks);
+            const updatedPanels = [...panels];
+            updatedPanels[index] = updatedTasks; // 更新面板
+            setPanels(updatedPanels);
         }
+
+        console.log("Current Index: ", index);
+    };
+    
+
+      // 切换显示项目的任务列表
+    const handleProjectsClick = () => {
+        setShowProjects(!showProjects);
     };
 
+    const handleTaskClick = (panelIndex) => {
+        const selectedTasks = panels[panelIndex]; // 获取对应面板的任务
+        setTasks(selectedTasks); // 设置当前的tasks
+        setIndex(panelIndex); // 设置面板的 index
+    };
 
     // 处理任务内容变化
     const handleNewTaskChange = (e) => {
@@ -178,6 +213,11 @@ const Taskboard = () => {
         updatedTasks.todo = [...updatedTasks.todo, newTask];
         setTasks(updatedTasks);
 
+        // 更新对应的panels
+        const updatedPanels = [...panels];
+        updatedPanels[index].todo = [...updatedPanels[index].todo, newTask];
+        setPanels(updatedPanels); // 更新panels状态
+
         // 清空输入框
         setNewTaskContent("");
         setNewTaskDescription("");
@@ -188,12 +228,18 @@ const Taskboard = () => {
        event.preventDefault();
         try {
             // 1. 发送普通数据 (email, password, tasks)
+            const storedEmail = email || localStorage.getItem('email');
+            const storedPassword = password || localStorage.getItem('password');
             const response1 = await axios.post('http://localhost:7001/tasks/', {
-                email,
-                password,
-                tasks,
+                email: storedEmail,
+                password: storedPassword,
+                panels: [...panels]  // 将当前的 tasks 面板也添加进去
             });
-            console.log('Data saved:', response1.data);
+            console.log('Email Saved: ', email);
+            console.log('Password Saved:', password);
+            console.log('Panels saved:', panels);
+
+            console.log('Data saved Return:', response1.data);
     
             // // 2. 发送文件数据
             // if (taskfiles) {
@@ -221,12 +267,27 @@ const Taskboard = () => {
     }
 
     const handleNewButton = (event) => {
-        const emptyTask = {
-            "todo": [], "doing": [], "done": []
+        const newtasks = {
+            todo: [], doing: [], done: []
         };
-        setTasks(emptyTask);
+        // 将原有的panels追加新的任务面板来更新panels
+        const updatedPanels = [...panels, { ...newtasks }]; 
+        setPanels(updatedPanels); 
+
+        // 创建新的空任务面板
+        setTasks(newtasks);
+
+        const updateTaskIndex = panels.length;
+        setIndex(updateTaskIndex);
+
+        console.log("updatedPanels: ", updatedPanels);
+        console.log("updateTaskIndex: ", updateTaskIndex);
+        console.log("Email: ", email);
+        console.log("Password: ", password);
+
         handleSaveTask(event);
     }
+    
 
     //编辑面板数据
     const updateTask = (columnId, taskId, updatedData) => {
@@ -260,12 +321,30 @@ const Taskboard = () => {
                 <div className="h">项目</div>
                 <div className="menu">
                     <ul>
-                        <li><a href="http://localhost:5173/taskboard">Projects</a></li>
+                        <li><a href="#" onClick={handleProjectsClick}>Projects</a></li>
                         <li><a href="#">Memebers</a></li>
                         <li><a href="https://github.com/HrimeNJ">Growth</a></li>
                         <li><a href="https://github.com/HrimeNJ">WebSite</a></li>
                     </ul>
                 </div>
+
+                {showProjects && (
+                <div className="task-list">
+                    <ul>
+                    {panels.map((panel, index) => {
+                        const totalTasks = panel.todo.length + panel.doing.length + panel.done.length; // 计算每个panel的任务总数
+                        return (
+                        <li key={index}>
+                            <a href="#" onClick={() => handleTaskClick(index)} style={{ fontSize: '12px' }}>
+                            Panel {index + 1}: {totalTasks} tasks
+                            </a>
+                        </li>
+                        );
+                    })}
+                    </ul>
+                </div>
+                )}
+
                 <footer className="bottomInfo">如有差误不妥之处，<br/>请联系电话： <br/> 13934469170。</footer>
 
 
@@ -279,7 +358,7 @@ const Taskboard = () => {
                     <div>
                         <ul>
                             <li className="topSectionItems"><a href="http://localhost:5173">Abstract</a></li>
-                            <li className="topSectionItems"><a href="http://localhost:5173/taskboard">Task Board</a></li>
+                            <li className="topSectionItems"><a href="/taskboard">Task Board</a></li>
                             <li className="topSectionItems"><a href="https://github.com/HrimeNJ">Contact us</a></li>
                             <li className="topSectionItems"><a href="http://localhost:5173/Login">Log out</a></li>
 
