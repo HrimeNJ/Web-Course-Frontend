@@ -197,9 +197,46 @@
   }
   
   /* 提交按钮 */
-  .submit {
-    background-color: #e3f2fd;
-  }
+  .AddTaskform {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.AddTaskinput {
+    flex-grow: 1;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-right: 10px;
+    transition: border-color 0.3s ease;
+}
+
+.AddTaskinput:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button.AddTasksubmit {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.AddTasksubmit:hover {
+    background-color: #0056b3;
+}
+
   
   /* 没有任务提示 */
   #Notask {

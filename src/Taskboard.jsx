@@ -16,23 +16,75 @@ const Taskboard = () => {
     const [newTaskContent, setNewTaskContent] = useState('');
     const [newTaskDescription, setNewTaskDescription] = useState('');
     const [newTaskEvaluation, setNewTaskEvaluation] = useState('');
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() =>{
-        if(email) {
+    useEffect(() => {
+        if (email) {
             axios.get(`http://localhost:7001/tasks?email=${email}`)
                 .then(response => {
                     if(response.data.success){
-                        setTasks(response.data.tasks);
+                        const fetchedTasks = response.data.tasks;
+                        setTasks(fetchedTasks);
+    
+                        // 获取所有有附件的任务ID
+                        const taskIdsWithAttachments = [];
+                        Object.keys(fetchedTasks).forEach(stage => {
+                            fetchedTasks[stage].forEach(task => {
+                                if (task.hasattachmentFile) {
+                                    taskIdsWithAttachments.push(task.id);
+                                }
+                            });
+                        });
+    
+                        // 并行获取所有附件
+                        Promise.all(taskIdsWithAttachments.map(taskId => fetchTaskFiles(taskId)))
+                            .then(() => {
+                                console.log('All files fetched and taskfiles updated');
+                                setLoading(false);
+                            })
+                            .catch(error => {
+                                console.error('Error fetching task files:', error);
+                                setLoading(false);
+                            });
                     }
                     else {
                         console.log("Tasks are nothing");
+                        setLoading(false);
                     }
                 })
                 .catch(error => {
                     console.log("Error fetching tasks", error);
+                    setLoading(false);
                 });
         }
-    }, [email])
+    }, [email]);
+    
+    // 获取附件的函数
+    const fetchTaskFiles = (taskId) => {
+        return axios.get(`http://localhost:7001/tasks/${taskId}/attachments`, { responseType: 'blob' })
+            .then(response => {
+                const url = URL.createObjectURL(new Blob([response.data]));
+                setTaskfiles(prevState => ({
+                    ...prevState,
+                    [taskId]: url
+                }));
+            })
+            .catch(error => {
+                console.log(`Error fetching files for task ${taskId}`, error);
+            });
+    };
+    
+    useEffect(() => {
+        if (Object.keys(taskfiles).length > 0) {
+            console.log('Task files updated:', taskfiles);
+            setLoading(false);
+        }
+    }, [taskfiles]);
+
+    //得到附件
+    const getTaskFile = (taskId) => {
+        return taskfiles[taskId] ? taskfiles[taskId] : null;
+    };
 
     // 拖拽开始处理函数
     const handleDragStart = (event, taskId, fromColumn) => {
@@ -118,6 +170,7 @@ const Taskboard = () => {
             content: newTaskContent,
             description: newTaskDescription,
             evaluation: newTaskEvaluation,
+            hasattachment: false,
         };
 
         // 将新任务添加到待办任务列表
@@ -195,7 +248,9 @@ const Taskboard = () => {
         }
     };
     
-    
+    if(loading) {
+        return <h1>Loading...</h1>;
+    }
 
     return (
         <>
@@ -205,9 +260,9 @@ const Taskboard = () => {
                 <div className="h">项目</div>
                 <div className="menu">
                     <ul>
-                        <li><a href="http://localhost:5173/taskboard/theboard">Projects</a></li>
+                        <li><a href="http://localhost:5173/taskboard">Projects</a></li>
                         <li><a href="#">Memebers</a></li>
-                        <li><a href="#">Growth</a></li>
+                        <li><a href="https://github.com/HrimeNJ">Growth</a></li>
                         <li><a href="https://github.com/HrimeNJ">WebSite</a></li>
                     </ul>
                 </div>
@@ -223,22 +278,16 @@ const Taskboard = () => {
                     </div>
                     <div>
                         <ul>
-                            <li className="topSectionItems"><a href="#">Abstract</a></li>
-                            <li className="topSectionItems"><a href="#">Task Board</a></li>
-                            <li className="topSectionItems"><a href="#">Contact us</a></li>
-                            <li className="topSectionItems"><a href="#">Log out</a></li>
-                            <li className="topSectionItems"><a href="#">TaskList</a></li>
+                            <li className="topSectionItems"><a href="http://localhost:5173">Abstract</a></li>
+                            <li className="topSectionItems"><a href="http://localhost:5173/taskboard">Task Board</a></li>
+                            <li className="topSectionItems"><a href="https://github.com/HrimeNJ">Contact us</a></li>
+                            <li className="topSectionItems"><a href="http://localhost:5173/Login">Log out</a></li>
 
                         </ul>
 
-                        <button className="topSectionButton" onClick={handleLogoutButton}>Logout</button>
-                        <button className="topSectionButton" onClick={handleNewButton}>New Board</button>
-                        
-
-                        <button className="topSectionButton" onClick={()=>navigate('/deletetask')}>Delete Task</button>
-                        {/* Add task form here */}
-                        <button className="topSectionButton" onClick={()=>navigate('/taskhistory')}>Task History</button>
-                        {/* Add task form here */}
+                        <button className="topSectionButton" onClick={handleNewButton}>Create</button>
+                        <button className="topSectionButton" onClick={handleLogoutButton}>Logout</button>                        
+                        <button className="topSectionButton" onClick={()=>navigate('/deletetask')}>Delete All</button>
                         <button className="topSectionButton" onClick={(event) => handleSaveTask(event)}>Save</button>
 
                     </div>
@@ -255,21 +304,22 @@ const Taskboard = () => {
                         <TaskList
                             tasks={tasks.todo}
                             columnId="todo"
+                            getTaskFile={getTaskFile}
                             onDragStart={handleDragStart}
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             updateTask={updateTask}
-                            taskflies={taskfiles}
                         />
                         {/* 新增任务表单 */}
-                        <form onSubmit={handleNewTaskSubmit}>
+                        <form onSubmit={handleNewTaskSubmit} className="AddTaskform">
                             <input
+                                className="AddTaskinput"
                                 type="text"
                                 placeholder="Add new task"
                                 value={newTaskContent}
                                 onChange={handleNewTaskChange}
                             />
-                            <button type="submit" className="submit">Add</button>
+                            <button type="submit" className="AddTasksubmit">Add</button>
                         </form>
                     </li>
 
@@ -281,11 +331,11 @@ const Taskboard = () => {
                         <TaskList
                             tasks={tasks.doing}
                             columnId="doing"
+                            getTaskFile={getTaskFile}
                             onDragStart={handleDragStart}
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             updateTask={updateTask}
-                            taskflies={taskfiles}
                         />
                     </li>
 
@@ -297,11 +347,11 @@ const Taskboard = () => {
                         <TaskList
                             tasks={tasks.done}
                             columnId="done"
+                            getTaskFile={getTaskFile}
                             onDragStart={handleDragStart}
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             updateTask={updateTask}
-                            taskflies={taskfiles}
                         />
                     </li>
                 </ul>

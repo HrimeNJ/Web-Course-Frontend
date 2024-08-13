@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Tasklist.css";
 import Modal from './Modal'; 
+import TaskDetailsModal from './TaskDetailsModal';
 
-const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask }) => {
+const TaskList = ({ tasks, columnId, getTaskFile, onDragStart, onDragOver, onDrop, updateTask }) => {
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [taskEditContent, setTaskEditContent] = useState("");
     const [taskDescription, setTaskDescription] = useState("");
@@ -11,9 +12,13 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
     const [showButton, setShowButton] = useState(true);
     const [attachmentFile, setAttachmentFile] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
     const [taskToEdit, setTaskToEdit] = useState(null);
 
 
+    useEffect(() => {
+        console.log("tasks in Tasklist: " , tasks);
+    });
     //任务编辑
     const handleTaskEditChange = (event) => {
         setTaskEditContent(event.target.value);
@@ -102,11 +107,14 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
 
     //任务查看的点击
     const handleViewClick = (task) => {
-        alert(`任务: ${task.content}\n描述: ${task.description}\n评价: ${task.evaluation}\n
-            附件: ${task.attachment ? task.attachment.name : '无'}`);
+        setSelectedTask(task);
         setShowOptions(null);
         setShowButton(true);
     };
+
+    const handleCloseViewModal = () =>{
+        setSelectedTask(null);
+    }
 
     //任务删除的点击
     const handleDeleteClick = (task) => {
@@ -134,11 +142,6 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
                             onDragStart={(event) => onDragStart(event, task.id, columnId)}>
                             
                             <p>{task.content}</p>
-                            {attachmentFile && (
-                                    <a href={URL.createObjectURL(attachmentFile)} download>
-                                        {attachmentFile.name}
-                                    </a>
-                            )}
   
                             {showButton && <button 
                                 className="options-button" onClick={() => handleOptionsClick(task.id)}>⋮</button>}
@@ -186,6 +189,15 @@ const TaskList = ({ tasks, columnId, onDragStart, onDragOver, onDrop, updateTask
                     </form>
                 )}
             </Modal>
+
+            {/* 显示任务详情 */}
+            {selectedTask && (
+                <TaskDetailsModal 
+                    task={selectedTask} 
+                    onClose={handleCloseViewModal} 
+                    getTaskFile={getTaskFile}
+                />
+            )}
         </>
     );
 };
